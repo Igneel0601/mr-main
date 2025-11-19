@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+* {
+  cursor: none !important;
+}
+
+:root {
+  --color-primary: #000000;
+  --color-secondary: #1f2937;
+  --color-text: #fafafa;
+  --color-text-secondary: #9ca3af;
+}
+
+body {
+  background-color: var(--color-primary);
+  color: var(--color-text);
+  font-family: 'Mabry Pro', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  position: relative;
+}
+
+#custom-cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(141, 122, 255, 0.8);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  mix-blend-mode: screen;
+  transform: translate(-50%, -50%);
+}
+
+#custom-cursor.hover {
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+}
+
+a, button {
+  transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+}
+
+a.cursor-hovered:not(.logo-link):not(.no-scale), button.cursor-hovered:not(.no-scale) {
+  color: #8d7aff !important;
+  transform: scale(1.1);
+}
+
+a.cursor-hovered.no-scale {
+  color: #8d7aff !important;
+}
+
+a.no-scale span {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+a.no-scale.cursor-hovered span {
+  transform: scale(1.1);
+}
+
+/* ::-webkit-scrollbar { 
+  display: none; 
+} */
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #8d7aff80, #0c0c12 70%);
+  z-index: -1;
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-down {
+  animation: slide-down 1s ease-out;
+}
+
+@keyframes slide-in-right {
+  from {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 1s ease-out 1s both;
+}
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-secondary {
+  background-color: var(--color-secondary);
+}
+
+.text-primary {
+  color: var(--color-text);
+}
+
+.text-secondar {
+  color: var(--color-text-secondary);
+}
+
+/* Intro words bottom-up animation */
+@keyframes word-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.intro-words {
+  overflow: hidden;
+}
+
+.intro-words .line {
+  display: block;
+  overflow: hidden;
+}
+
+.intro-words .word {
+  display: inline-block;
+  transform: translateY(100%);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation-name: word-up;
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.2,0.8,0.2,1);
+  animation-fill-mode: forwards;
+}
+
+/* Spline overlay fade-in after words finish */
+@keyframes spline-fade {
+  from {
+    opacity: 0;
+    transform: translate(15%, 10%) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(15%, 10%) translateY(0);
+  }
+}
+
+
+/* Hide Spline "Built with Spline" badge if present */
+.spline-badge,
+.made-with-spline,
+.spline-credit,
+.splinetool-credit,
+.spline-logo,
+a[href*="spline.design"],
+img[alt*="Spline"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
