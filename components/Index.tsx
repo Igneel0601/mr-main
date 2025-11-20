@@ -4,6 +4,7 @@ import Spline from '@splinetool/react-spline/next';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import styles from './styles.module.scss';
 import AnimatedWords from './AnimatedWords';
+import { GLOBAL_ANIM_DELAY } from './animationConfig';
 import { lines, STAGGER, WORD_DURATION } from './AnimatedWords';
 
 export const threshold = typeof window !== 'undefined' ? Math.max(window.innerHeight * 0.2, 200) : 200;
@@ -41,7 +42,7 @@ export default function Index() {
                 className={styles.splineWrapper}
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: splineFadeDelay, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ delay: GLOBAL_ANIM_DELAY + splineFadeDelay, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
                 style={{ scale, opacity, transformOrigin: 'center 35%' }}
             >
                 <Spline

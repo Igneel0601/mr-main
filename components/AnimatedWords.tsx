@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import styles from './styles.module.scss';
 import { threshold, fadeDistance } from './Index';
+import { GLOBAL_ANIM_DELAY } from './animationConfig';
 
 export const lines = ["MINIMAL. IMPACTFUL.", "DIGITAL EXPERIENCES"];
 // animation timing constants (seconds)
@@ -39,7 +40,7 @@ function AnimatedWords() {
                                 className={styles.word}
                                 initial={{ opacity: 0, y: 22 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * STAGGER, type: 'spring', stiffness: 120, damping: 18 }}
+                                        transition={{ delay: GLOBAL_ANIM_DELAY + idx * STAGGER, type: 'spring', stiffness: 120, damping: 18 }}
                             >
                                 {word + '\u00A0'}
                             </motion.span>

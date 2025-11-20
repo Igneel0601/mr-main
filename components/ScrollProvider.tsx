@@ -29,8 +29,8 @@ export default function ScrollProvider({ children }: { children: React.ReactNode
       // update background parallax — slowest layer
       try {
         const scroll = (lenis as any).scroll ?? window.scrollY ?? 0;
-        // small factor so background moves slowest (e.g. 0.12)
-        const factor = 0.12;
+        // small factor so background moves slowest (base 0.12). Multiply by 3 for faster motion.
+        const factor = 0.5; // 3x speed
         const bgY = Math.round(-scroll * factor);
         document.body.style.setProperty("--bg-y", `${bgY}px`);
       } catch (e) {
@@ -47,7 +47,7 @@ export default function ScrollProvider({ children }: { children: React.ReactNode
       lenis.destroy();
       try {
         delete (window as any).lenis;
-      } catch (e) {}
+      } catch (e) { }
     };
   }, []);
 

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useAnimation } from 'framer-motion';
+import { GLOBAL_ANIM_DELAY } from './animationConfig';
 
 export default function Navbar() {
 const { scrollY } = useScroll();
@@ -23,13 +24,11 @@ useEffect(() => {
   return () => unsubscribe();
 }, [scrollY]);
 
-
-
   const controls = useAnimation();
 
   useEffect(() => {
-    // entrance using a tween (no spring)
-    controls.start({ y: 0, opacity: 1, transition: { type: 'tween', duration: 0.48, ease: [0.22, 1, 0.36, 1] } });
+    // entrance using a tween (no spring) — apply global entrance delay
+    controls.start({ y: 0, opacity: 1, transition: { type: 'tween', delay: GLOBAL_ANIM_DELAY, duration: 0.48, ease: [0.22, 1, 0.36, 1] } });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
