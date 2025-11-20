@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from 'react';
-import { motion, useScroll } from 'framer-motion';
+import { motion, useScroll, useAnimation } from 'framer-motion';
 
 export default function Navbar() {
 const { scrollY } = useScroll();
@@ -25,11 +25,24 @@ useEffect(() => {
 
 
 
+  const controls = useAnimation();
+
+  useEffect(() => {
+    // entrance using a tween (no spring)
+    controls.start({ y: 0, opacity: 1, transition: { type: 'tween', duration: 0.48, ease: [0.22, 1, 0.36, 1] } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // hide/show also uses the same tween to avoid switching animation types
+    controls.start({ y: hidden ? -76 : 0, opacity: hidden ? 0 : 1, transition: { type: 'tween', duration: 0.38, ease: [0.22, 1, 0.36, 1] } });
+  }, [hidden, controls]);
+
   return (
     <motion.nav
       className="fixed top-0 w-full z-999 h-20 bg-white/0 backdrop-blur-md text-white flex items-center px-[220px]"
-      animate={{ y: hidden ? "-100%" : "0%" }}
-      transition={{ type: "tween", duration: 0.25 }}
+      initial={{ y: -76, opacity: 0 }}
+      animate={controls}
     >
       <a href="/" className="flex items-center gap-0 logo-link">
         <div className="flex items-center gap-0">

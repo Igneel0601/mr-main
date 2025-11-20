@@ -30,6 +30,11 @@
   display: inline-block;
   will-change: transform, opacity;
   margin-right: 0.6rem;
+  vertical-align: middle;
+  transform-origin: center center;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  white-space: nowrap;
 }
 
 .splineWrapper {

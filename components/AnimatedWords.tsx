@@ -19,11 +19,11 @@ function AnimatedWords() {
     // Keep opacity = 1 until we pass threshold, then fade to 0 across fadeDistance.
     const opacity = useTransform(scrollY, [0, threshold + fadeDistance + 200, threshold + fadeDistance + 200 + 200], [1, 1, 0]);
     const scale = useTransform(scrollY, [threshold + fadeDistance, threshold + fadeDistance + 200], [1, 2]);
+
     return (
 
         <motion.div
             className={styles.introWords}
-            transition={{ delay: 2, duration: 0.6 }}
             style={{ scale, opacity, transformOrigin: 'center center' }}
         >
 
@@ -37,9 +37,9 @@ function AnimatedWords() {
                             <motion.span
                                 key={key}
                                 className={styles.word}
-                                initial={{ opacity: 0, y: 18 }}
+                                initial={{ opacity: 0, y: 22 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * STAGGER, duration: WORD_DURATION, ease: 'easeOut' }}
+                                transition={{ delay: idx * STAGGER, type: 'spring', stiffness: 120, damping: 18 }}
                             >
                                 {word + '\u00A0'}
                             </motion.span>

@@ -41,8 +41,8 @@ export default function Index() {
                 className={styles.splineWrapper}
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: splineFadeDelay, duration: 0.6 }}
-                style={{ scale, opacity, transformOrigin: 'center center' }}
+                transition={{ delay: splineFadeDelay, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+                style={{ scale, opacity, transformOrigin: 'center 35%' }}
             >
                 <Spline
                     scene="https://prod.spline.design/MgluQXrL5N7glBkd/scene.splinecode"
