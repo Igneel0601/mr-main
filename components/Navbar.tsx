@@ -1,8 +1,36 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useRef, useState } from 'react';
+import { motion, useScroll } from 'framer-motion';
 
 export default function Navbar() {
+const { scrollY } = useScroll();
+const [hidden, setHidden] = useState(false);
+const lastY = useRef(0);
+
+useEffect(() => {
+  const unsubscribe = scrollY.on("change", (y) => {
+    const prev = lastY.current;
+    const delta = y - prev;
+
+    if (delta > 5 && y > 50) setHidden(true);
+    else if (delta < -5) setHidden(false);
+
+    lastY.current = y;
+  });
+
+  return () => unsubscribe();
+}, [scrollY]);
+
+
+
   return (
-    <nav className="sticky top-0 z-50 h-20 bg-white/0 backdrop-blur-md text-white flex items-center px-[220px] animate-slide-down">
+    <motion.nav
+      className="fixed top-0 w-full z-999 h-20 bg-white/0 backdrop-blur-md text-white flex items-center px-[220px]"
+      animate={{ y: hidden ? "-100%" : "0%" }}
+      transition={{ type: "tween", duration: 0.25 }}
+    >
       <a href="/" className="flex items-center gap-0 logo-link">
         <div className="flex items-center gap-0">
           <Image src="/logo_dark.svg" alt="Logo" width={64} height={64} />
@@ -22,6 +50,6 @@ export default function Navbar() {
           <span className="inline-block">GET IN TOUCH</span>
         </a>
       </div>
-    </nav>
+    </motion.nav>
   );
 }

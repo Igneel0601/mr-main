@@ -1,5 +1,6 @@
 import "./globals.css";
 import CustomCursor from "@/components/CustomCursor";
+import ScrollProvider from '@/components/ScrollProvider';
 
 export default function RootLayout({
   children,
@@ -9,8 +10,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <CustomCursor />
-        {children}
+        <ScrollProvider>
+          <CustomCursor />
+          {children}
+        </ScrollProvider>
       </body>
     </html>
   );

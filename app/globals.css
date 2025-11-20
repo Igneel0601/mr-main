@@ -13,6 +13,7 @@
 
 body {
   background-color: var(--color-primary);
+  overflow-x: hidden;
   color: var(--color-text);
   font-family: 'Mabry Pro', sans-serif;
   font-size: 16px;
@@ -73,6 +74,8 @@ body::before {
   z-index: -1;
 }
 
+
+
 @keyframes slide-down {
   from {
     transform: translateY(-100%);
@@ -117,62 +120,4 @@ body::before {
 
 .text-secondar {
   color: var(--color-text-secondary);
-}
-
-/* Intro words bottom-up animation */
-@keyframes word-up {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.intro-words {
-  overflow: hidden;
-}
-
-.intro-words .line {
-  display: block;
-  overflow: hidden;
-}
-
-.intro-words .word {
-  display: inline-block;
-  transform: translateY(100%);
-  opacity: 0;
-  will-change: transform, opacity;
-  animation-name: word-up;
-  animation-duration: 0.6s;
-  animation-timing-function: cubic-bezier(0.2,0.8,0.2,1);
-  animation-fill-mode: forwards;
-}
-
-/* Spline overlay fade-in after words finish */
-@keyframes spline-fade {
-  from {
-    opacity: 0;
-    transform: translate(15%, 10%) translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(15%, 10%) translateY(0);
-  }
-}
-
-
-/* Hide Spline "Built with Spline" badge if present */
-.spline-badge,
-.made-with-spline,
-.spline-credit,
-.splinetool-credit,
-.spline-logo,
-a[href*="spline.design"],
-img[alt*="Spline"] {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
 }

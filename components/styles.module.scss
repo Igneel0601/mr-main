@@ -1,0 +1,47 @@
+/* Shared component styles to replace Tailwind utilities used in Index/Intro */
+
+
+.container {
+  min-height: 160vh;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.introWords {
+  margin-top: 10rem; /* pt-20 */
+  font-size: 7rem; /* text-[118px] */
+  text-align: center;
+  line-height: 1; /* leading-tight */
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.line {
+  display: block;
+  overflow: hidden;
+}
+
+.word {
+  display: inline-block;
+  will-change: transform, opacity;
+  margin-right: 0.6rem;
+}
+
+.splineWrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* Optional helpers used elsewhere */
+.flexCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
