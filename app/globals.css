@@ -67,17 +67,27 @@ a.no-scale.cursor-hovered span {
   display: none; 
 } */
 
+/* body::before { */
+  /* content: ''; */
+  /* position: absolute; */
+  /* inset: 0; */
+  /* background-image: url('/main-bg.png'); */
+  /* background-repeat: repeat; */
+  /* background-size: contain; or 100px 100px if you want small tiles */
+  /* background-position: center center; */
+  /* translate the background using the --bg-y variable set by the ScrollProvider */
+  /* transform: translateY(var(--bg-y)); */
+  /* will-change: transform; */
+  /* z-index: -1;
+} */
+
 body::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
-  background-image: url('/main-bg.png');
-  background-repeat: repeat;
-  background-size: 100vw; /* or 100px 100px if you want small tiles */
-  background-position: center center;
-  /* translate the background using the --bg-y variable set by the ScrollProvider */
-  transform: translateY(var(--bg-y));
-  will-change: transform;
+  background: radial-gradient(circle at center, #8d7aff80, #0c0c12 70%);
+  background-repeat: no-repeat;
+  background-size: cover;
   z-index: -1;
 }
 
@@ -128,3 +138,4 @@ body::before {
 .text-secondar {
   color: var(--color-text-secondary);
 }
+

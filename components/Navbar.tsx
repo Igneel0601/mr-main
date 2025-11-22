@@ -1,28 +1,42 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { motion, useScroll, useAnimation } from 'framer-motion';
 import { GLOBAL_ANIM_DELAY } from './animationConfig';
+import { useNavContext } from '../context/NavContext';
 
 export default function Navbar() {
-const { scrollY } = useScroll();
-const [hidden, setHidden] = useState(false);
-const lastY = useRef(0);
+  const { scrollY } = useScroll();
+  const lastY = useRef(0);
+  const { navHidden, setNavHidden, setNavHeight } = useNavContext();
+  const navRef = useRef<HTMLElement | null>(null);
 
-useEffect(() => {
-  const unsubscribe = scrollY.on("change", (y) => {
-    const prev = lastY.current;
-    const delta = y - prev;
+  useEffect(() => {
+    const unsubscribe = scrollY.on("change", (y) => {
+      const prev = lastY.current;
+      const delta = y - prev;
 
-    if (delta > 5 && y > 50) setHidden(true);
-    else if (delta < -5) setHidden(false);
+      if (delta > 5 && y > 10) setNavHidden(true);
+      else if (delta < -5) setNavHidden(false);
 
-    lastY.current = y;
-  });
+      lastY.current = y;
+    });
 
-  return () => unsubscribe();
-}, [scrollY]);
+    return () => unsubscribe();
+  }, [scrollY, setNavHidden]);
+
+  // measure nav height and expose it through context so other components can offset accordingly
+  useEffect(() => {
+    function updateHeight() {
+      const h = document.getElementById("navbar")?.offsetHeight || 80;
+      setNavHeight(h);
+    }
+
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, [setNavHeight]);
 
   const controls = useAnimation();
 
@@ -34,13 +48,16 @@ useEffect(() => {
 
   useEffect(() => {
     // hide/show also uses the same tween to avoid switching animation types
-    controls.start({ y: hidden ? -76 : 0, opacity: hidden ? 0 : 1, transition: { type: 'tween', duration: 0.38, ease: [0.22, 1, 0.36, 1] } });
-  }, [hidden, controls]);
+    const hideY = -(document.getElementById("navbar")?.offsetHeight || 80);
+    controls.start({ y: navHidden ? hideY : 0, opacity: navHidden ? 0 : 1, transition: { type: 'tween', duration: 0.38, ease: [0.22, 1, 0.36, 1] } });
+  }, [navHidden, controls]);
 
   return (
     <motion.nav
-      className="fixed top-0 w-full z-999 h-20 bg-white/0 backdrop-blur-md text-white flex items-center px-[220px]"
-      initial={{ y: -76, opacity: 0 }}
+      id="navbar"
+      ref={navRef}
+      className="fixed top-0 w-full z-999 h-20 bg-white/0 backdrop-blur-md text-white flex items-center justify-around"
+      initial={{ y: -(navRef.current?.offsetHeight ?? 80), opacity: 0 }}
       animate={controls}
     >
       <a href="/" className="flex items-center gap-0 logo-link">
@@ -52,12 +69,12 @@ useEffect(() => {
           <span className="text-sm font-normal whitespace-nowrap">RAVAN</span>
         </div>
       </a>
-      <div className="ml-auto flex gap-18">
+      <div className="flex gap-18">
         <a href="#" className="relative hover:text-[#8d7aff] after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-[#8d7aff] after:transition-all after:duration-300 hover:after:w-full">PROJECTS</a>
         <a href="#" className="relative hover:text-[#8d7aff] after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-[#8d7aff] after:transition-all after:duration-300 hover:after:w-full">SERVICES</a>
         <a href="#" className="relative hover:text-[#8d7aff] after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-[#8d7aff] after:transition-all after:duration-300 hover:after:w-full">ABOUT</a>
       </div>
-      <div className="ml-auto flex">
+      <div className="flex">
         <a href="#" className="rounded-full border border-[#8d7aff] py-3 px-8 no-scale">
           <span className="inline-block">GET IN TOUCH</span>
         </a>

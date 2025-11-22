@@ -1,9 +1,8 @@
 
-import Services from "@/components/ Services";
-import Intro from "@/components/Intro";
+import Services from "@/app/services/page";
 import Navbar from "@/components/Navbar";
-import Index from "@/components/Index";
-import styles from '@/components/styles.module.scss';
+import Index from "@/app/index/page";
+import OurServices from "@/app/ourServices/page";
 
 export default function Home() {
   return (
@@ -11,6 +10,7 @@ export default function Home() {
       <Navbar />
       <main>
         <Index />
+        <OurServices />
         <Services />
       </main>
     </>

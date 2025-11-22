@@ -1,6 +1,7 @@
 import "./globals.css";
 import CustomCursor from "@/components/CustomCursor";
 import ScrollProvider from '@/components/ScrollProvider';
+import { NavProvider } from '@/context/NavContext';
 
 export default function RootLayout({
   children,
@@ -11,8 +12,10 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ScrollProvider>
-          <CustomCursor />
-          {children}
+          <NavProvider>
+            <CustomCursor />
+            {children}
+          </NavProvider>
         </ScrollProvider>
       </body>
     </html>

@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import styles from './styles.module.scss';
-import { threshold, fadeDistance } from './Index';
+import styles from '@/app/index/index.module.scss';
+import { threshold, fadeDistance } from '../app/index/page';
 import { GLOBAL_ANIM_DELAY } from './animationConfig';
 
 export const lines = ["MINIMAL. IMPACTFUL.", "DIGITAL EXPERIENCES"];

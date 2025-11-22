@@ -2,13 +2,13 @@
 
 import Spline from '@splinetool/react-spline/next';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import styles from './styles.module.scss';
-import AnimatedWords from './AnimatedWords';
-import { GLOBAL_ANIM_DELAY } from './animationConfig';
-import { lines, STAGGER, WORD_DURATION } from './AnimatedWords';
+import styles from './index.module.scss';
+import AnimatedWords from '@/components/AnimatedWords';
+import { GLOBAL_ANIM_DELAY } from '@/components/animationConfig';
+import { lines, STAGGER, WORD_DURATION } from '@/components/AnimatedWords';
 
 export const threshold = typeof window !== 'undefined' ? Math.max(window.innerHeight * 0.2, 200) : 200;
-    // Extra distance (pixels) over which the art fades out after reaching max scale.
+// Extra distance (pixels) over which the art fades out after reaching max scale.
 export const fadeDistance = typeof window !== 'undefined' ? Math.max(window.innerHeight * 0.1, 100) : 100;
 
 export default function Index() {
@@ -34,23 +34,26 @@ export default function Index() {
     // No manual listener needed; `scrollY` updates automatically for the viewport.
 
     return (
-        <div className={styles.container}>
-            
-            <AnimatedWords />
+        <div className={styles.indexWrapper}>
 
-            <motion.div
-                className={styles.splineWrapper}
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: GLOBAL_ANIM_DELAY + splineFadeDelay, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-                style={{ scale, opacity, transformOrigin: 'center 35%' }}
-            >
-                <Spline
-                    scene="https://prod.spline.design/MgluQXrL5N7glBkd/scene.splinecode"
-                    style={{ width: '100%', height: '100%', transform: 'translate(0, -10%) translateY(0)' }}
-                />
-            </motion.div>
+            <div className={styles.container}>
 
+                <AnimatedWords />
+
+                <motion.div
+                    className={styles.splineWrapper}
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: GLOBAL_ANIM_DELAY + splineFadeDelay, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ scale, opacity, transformOrigin: 'center 35%' }}
+                >
+                    <Spline
+                        scene="https://prod.spline.design/MgluQXrL5N7glBkd/scene.splinecode"
+                        style={{ width: '100%', height: '100%', transform: 'translate(0, 15%) translateY(0)' }}
+                    />
+                </motion.div>
+
+            </div>
         </div>
     );
 }
