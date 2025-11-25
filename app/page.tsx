@@ -2,7 +2,7 @@
 import Services from "@/app/services/page";
 import Navbar from "@/components/Navbar";
 import Index from "@/app/index/page";
-import OurServices from "@/app/ourServices/page";
+import OurServicesSvg from "@/app/ourServicesSvg/page";
 
 export default function Home() {
   return (
@@ -10,7 +10,7 @@ export default function Home() {
       <Navbar />
       <main>
         <Index />
-        <OurServices />
+        <OurServicesSvg />
         <Services />
       </main>
     </>
