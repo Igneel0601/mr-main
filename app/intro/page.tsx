@@ -1,17 +1,16 @@
-"use client";
+'use client';
 
 import Spline from '@splinetool/react-spline/next';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import styles from './index.module.scss';
+import styles from './intro.module.scss';
 import AnimatedWords from '@/components/AnimatedWords';
 import { GLOBAL_ANIM_DELAY } from '@/components/animationConfig';
 import { lines, STAGGER, WORD_DURATION } from '@/components/AnimatedWords';
+import { getThreshold, getFadeDistance } from '@/exports/export';
 
-export const threshold = typeof window !== 'undefined' ? Math.max(window.innerHeight * 0.2, 200) : 200;
-// Extra distance (pixels) over which the art fades out after reaching max scale.
-export const fadeDistance = typeof window !== 'undefined' ? Math.max(window.innerHeight * 0.1, 100) : 100;
 
-export default function Index() {
+
+export default function Intro() {
 
 
     // derive total words and compute when the last word finishes (seconds)
@@ -20,6 +19,8 @@ export default function Index() {
     const lastWordStart = (totalWords - 1) * STAGGER;
     const lastWordFinish = lastWordStart + WORD_DURATION;
     const splineFadeDelay = +(lastWordFinish + 0.12).toFixed(2); // small buffer
+    const threshold = getThreshold();
+    const fadeDistance = getFadeDistance();
 
 
     // Drive scale and fade from Framer Motion's `useScroll` hook (viewport scroll)

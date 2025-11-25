@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import styles from '@/app/index/index.module.scss';
-import { threshold, fadeDistance } from '../app/index/page';
+import styles from '@/app/intro/intro.module.scss';
+import { getThreshold, getFadeDistance } from '@/exports/export';
 import { GLOBAL_ANIM_DELAY } from './animationConfig';
 
 export const lines = ["MINIMAL. IMPACTFUL.", "DIGITAL EXPERIENCES"];
@@ -8,12 +8,15 @@ export const lines = ["MINIMAL. IMPACTFUL.", "DIGITAL EXPERIENCES"];
 export const STAGGER = 0.5; // seconds between words
 export const WORD_DURATION = 0.6;
 function AnimatedWords() {
+
+    const threshold = getThreshold();
+    const fadeDistance = getFadeDistance();
     const { scrollY } = useScroll();
 
     const vh = typeof window !== "undefined" ? window.innerHeight : 0;
 
     const fadeStart = vh * 2; // 20vh
-    const fadeEnd   = vh * 3; // 40vh
+    const fadeEnd = vh * 3; // 40vh
 
 
     let count = 0; // cumulative word index for stagger
@@ -40,7 +43,7 @@ function AnimatedWords() {
                                 className={styles.word}
                                 initial={{ opacity: 0, y: 22 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: GLOBAL_ANIM_DELAY + idx * STAGGER, type: 'spring', stiffness: 120, damping: 18 }}
+                                transition={{ delay: GLOBAL_ANIM_DELAY + idx * STAGGER, type: 'spring', stiffness: 120, damping: 18 }}
                             >
                                 {word + '\u00A0'}
                             </motion.span>
