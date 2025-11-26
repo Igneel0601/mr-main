@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import styles from '@/app/intro/intro.module.scss';
+import styles from './intro/intro.module.scss';
 import { getThreshold, getFadeDistance } from '@/exports/export';
-import { GLOBAL_ANIM_DELAY } from './animationConfig';
+import { GLOBAL_ANIM_DELAY } from '../exports/animationConfig';
 
 export const lines = ["MINIMAL. IMPACTFUL.", "DIGITAL EXPERIENCES"];
 // animation timing constants (seconds)

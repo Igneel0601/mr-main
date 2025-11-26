@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef } from 'react';
 import { motion, useScroll, useAnimation } from 'framer-motion';
-import { GLOBAL_ANIM_DELAY } from './animationConfig';
+import { GLOBAL_ANIM_DELAY } from '../exports/animationConfig';
 import { useNavContext } from '../context/NavContext';
 
 export default function Navbar() {

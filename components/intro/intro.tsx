@@ -4,7 +4,7 @@ import Spline from '@splinetool/react-spline/next';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import styles from './intro.module.scss';
 import AnimatedWords from '@/components/AnimatedWords';
-import { GLOBAL_ANIM_DELAY } from '@/components/animationConfig';
+import { GLOBAL_ANIM_DELAY } from '@/exports/animationConfig';
 import { lines, STAGGER, WORD_DURATION } from '@/components/AnimatedWords';
 import { getThreshold, getFadeDistance } from '@/exports/export';
 

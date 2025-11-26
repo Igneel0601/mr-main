@@ -1,15 +1,15 @@
 
-import Services from "@/app/services/page";
+import Services from "@/components/services/services";
 import Navbar from "@/components/Navbar";
-import Index from "@/app/intro/page";
-import OurServicesSvg from "@/app/ourServicesSvg/page";
+import OurServicesSvg from "@/components/ourServicesSvg/ourServicesSvg";
+import Intro from "@/components/intro/intro";
 
 export default function Home() {
   return (
     <>
       <Navbar />
       <main>
-        <Index />
+        <Intro />
         <OurServicesSvg />
         <Services />
       </main>

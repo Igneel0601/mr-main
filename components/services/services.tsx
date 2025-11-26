@@ -2,7 +2,7 @@
 import React, { useRef } from 'react'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import styles from './services.module.scss'
-import ServiceCard from '../../components/ServiceCard'
+import ServiceCard from '../ServiceCard'
 
 // Use a pages array (user will supply content). Set number of pages to 10.
 const PAGES = 10

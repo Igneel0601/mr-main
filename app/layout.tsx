@@ -1,6 +1,6 @@
 import "./globals.css";
 import CustomCursor from "@/components/CustomCursor";
-import ScrollProvider from '@/components/ScrollProvider';
+import ScrollProvider from '@/context/ScrollProvider';
 import { NavProvider } from '@/context/NavContext';
 
 export default function RootLayout({
