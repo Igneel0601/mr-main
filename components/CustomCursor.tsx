@@ -8,7 +8,8 @@ export default function CustomCursor() {
     cursor.id = 'custom-cursor';
     document.body.appendChild(cursor);
 
-    let currentHoveredElement: HTMLElement | null = null;
+    let currentHoveredElements: HTMLElement[] = [];
+    let isHoveringInteractive = false;
 
     const moveCursor = (e: MouseEvent) => {
       cursor.style.left = e.clientX + 'px';
@@ -17,40 +18,57 @@ export default function CustomCursor() {
       // Check if hovering over interactive element
       const target = e.target as HTMLElement;
       const isInteractive = target.closest('a, button, input, textarea, select, [role="button"]') as HTMLElement;
+      const ignoreCursor = target.closest('.no-cursor') as HTMLElement;
+
+      const popUnderPointer = target.closest('.cursor-pop') as HTMLElement | null;
       
       // Exclude logo link from cursor effects
-      if (isInteractive && !isInteractive.classList.contains('logo-link')) {
-        cursor.classList.add('hover');
-        
-        // Remove class from previous element
-        if (currentHoveredElement && currentHoveredElement !== isInteractive) {
-          currentHoveredElement.classList.remove('cursor-hovered');
+      if (!ignoreCursor && isInteractive && !isInteractive.classList.contains('logo-link')) {
+        const allowCursorOnInteractive = isInteractive.classList.contains('cursor-show')
+        const shouldHideCursor = !allowCursorOnInteractive
+
+        isHoveringInteractive = shouldHideCursor;
+        cursor.style.opacity = shouldHideCursor ? '0' : '1';
+        cursor.classList.toggle('hover', shouldHideCursor);
+
+        const popTargets = Array.from(isInteractive.querySelectorAll<HTMLElement>('.cursor-pop'))
+
+        // If the interactive has cursor-pop targets, only highlight when pointer is over text.
+        let nextHoveredElements: HTMLElement[] = []
+        if (popTargets.length > 0) {
+          if (popUnderPointer && isInteractive.contains(popUnderPointer)) {
+            // Highlight all text spans in the item (num + name) once the pointer is over text
+            nextHoveredElements = popTargets
+          }
+        } else {
+          nextHoveredElements = [isInteractive]
         }
         
-        // Add class to current element
-        isInteractive.classList.add('cursor-hovered');
-        currentHoveredElement = isInteractive;
+        // Remove class from previous elements
+        for (const el of currentHoveredElements) el.classList.remove('cursor-hovered')
+
+        // Add class to current elements
+        for (const el of nextHoveredElements) el.classList.add('cursor-hovered')
+        currentHoveredElements = nextHoveredElements
       } else {
+        isHoveringInteractive = false;
+        cursor.style.opacity = '1';
         cursor.classList.remove('hover');
         
         // Remove class when not hovering
-        if (currentHoveredElement) {
-          currentHoveredElement.classList.remove('cursor-hovered');
-          currentHoveredElement = null;
-        }
+        for (const el of currentHoveredElements) el.classList.remove('cursor-hovered')
+        currentHoveredElements = []
       }
     };
 
     const hideCursor = () => {
       cursor.style.opacity = '0';
-      if (currentHoveredElement) {
-        currentHoveredElement.classList.remove('cursor-hovered');
-        currentHoveredElement = null;
-      }
+      for (const el of currentHoveredElements) el.classList.remove('cursor-hovered')
+      currentHoveredElements = []
     };
 
     const showCursor = () => {
-      cursor.style.opacity = '1';
+      cursor.style.opacity = isHoveringInteractive ? '0' : '1';
     };
 
     document.addEventListener('mousemove', moveCursor);

@@ -32,17 +32,29 @@ body {
   pointer-events: none;
   z-index: 9999;
   transition: transform 0.15s ease, opacity 0.15s ease;
-  mix-blend-mode: screen;
+  /* Keep color consistent over light sections (e.g. Services pages) */
+  mix-blend-mode: normal;
   transform: translate(-50%, -50%);
 }
 
 #custom-cursor.hover {
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
+  /* Keep cursor visible over interactive elements */
+  transform: translate(-50%, -50%) scale(0.55);
+  opacity: 0.65;
 }
 
 a, button {
   transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+}
+
+.cursor-pop {
+  display: inline-block;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.cursor-pop.cursor-hovered {
+  color: #8d7aff !important;
+  transform: scale(1.1);
 }
 
 a.cursor-hovered:not(.logo-link):not(.no-scale), button.cursor-hovered:not(.no-scale) {
@@ -50,16 +62,16 @@ a.cursor-hovered:not(.logo-link):not(.no-scale), button.cursor-hovered:not(.no-s
   transform: scale(1.1);
 }
 
-a.cursor-hovered.no-scale {
+a.cursor-hovered.no-scale, button.cursor-hovered.no-scale {
   color: #8d7aff !important;
 }
 
-a.no-scale span {
+a.no-scale span, button.no-scale span {
   display: inline-block;
   transition: transform 0.3s ease;
 }
 
-a.no-scale.cursor-hovered span {
+a.no-scale.cursor-hovered span, button.no-scale.cursor-hovered span {
   transform: scale(1.1);
 }
 
