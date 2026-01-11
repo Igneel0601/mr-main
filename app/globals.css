@@ -9,10 +9,12 @@
   --color-secondary: #1f2937;
   --color-text: #fafafa;
   --color-text-secondary: #9ca3af;
+  --bg-y: 0px;
 }
 
 body {
   background-color: var(--color-primary);
+  overflow-x: hidden;
   color: var(--color-text);
   font-family: 'Mabry Pro', sans-serif;
   font-size: 16px;
@@ -30,17 +32,29 @@ body {
   pointer-events: none;
   z-index: 9999;
   transition: transform 0.15s ease, opacity 0.15s ease;
-  mix-blend-mode: screen;
+  /* Keep color consistent over light sections (e.g. Services pages) */
+  mix-blend-mode: normal;
   transform: translate(-50%, -50%);
 }
 
 #custom-cursor.hover {
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
+  /* Keep cursor visible over interactive elements */
+  transform: translate(-50%, -50%) scale(0.55);
+  opacity: 0.65;
 }
 
 a, button {
   transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+}
+
+.cursor-pop {
+  display: inline-block;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.cursor-pop.cursor-hovered {
+  color: #8d7aff !important;
+  transform: scale(1.1);
 }
 
 a.cursor-hovered:not(.logo-link):not(.no-scale), button.cursor-hovered:not(.no-scale) {
@@ -48,16 +62,16 @@ a.cursor-hovered:not(.logo-link):not(.no-scale), button.cursor-hovered:not(.no-s
   transform: scale(1.1);
 }
 
-a.cursor-hovered.no-scale {
+a.cursor-hovered.no-scale, button.cursor-hovered.no-scale {
   color: #8d7aff !important;
 }
 
-a.no-scale span {
+a.no-scale span, button.no-scale span {
   display: inline-block;
   transition: transform 0.3s ease;
 }
 
-a.no-scale.cursor-hovered span {
+a.no-scale.cursor-hovered span, button.no-scale.cursor-hovered span {
   transform: scale(1.1);
 }
 
@@ -65,13 +79,31 @@ a.no-scale.cursor-hovered span {
   display: none; 
 } */
 
+/* body::before { */
+  /* content: ''; */
+  /* position: absolute; */
+  /* inset: 0; */
+  /* background-image: url('/main-bg.png'); */
+  /* background-repeat: repeat; */
+  /* background-size: contain; or 100px 100px if you want small tiles */
+  /* background-position: center center; */
+  /* translate the background using the --bg-y variable set by the ScrollProvider */
+  /* transform: translateY(var(--bg-y)); */
+  /* will-change: transform; */
+  /* z-index: -1;
+} */
+
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background: radial-gradient(circle at center, #8d7aff80, #0c0c12 70%);
+  background-repeat: no-repeat;
+  background-size: cover;
   z-index: -1;
 }
+
+
 
 @keyframes slide-down {
   from {
@@ -100,7 +132,7 @@ body::before {
 }
 
 .animate-slide-in-right {
-  animation: slide-in-right 1s ease-out 1s both;
+  animation: slide-in-right 2s ease-out 2s both;
 }
 
 .bg-primary {
@@ -119,60 +151,3 @@ body::before {
   color: var(--color-text-secondary);
 }
 
-/* Intro words bottom-up animation */
-@keyframes word-up {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.intro-words {
-  overflow: hidden;
-}
-
-.intro-words .line {
-  display: block;
-  overflow: hidden;
-}
-
-.intro-words .word {
-  display: inline-block;
-  transform: translateY(100%);
-  opacity: 0;
-  will-change: transform, opacity;
-  animation-name: word-up;
-  animation-duration: 0.6s;
-  animation-timing-function: cubic-bezier(0.2,0.8,0.2,1);
-  animation-fill-mode: forwards;
-}
-
-/* Spline overlay fade-in after words finish */
-@keyframes spline-fade {
-  from {
-    opacity: 0;
-    transform: translate(15%, 10%) translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(15%, 10%) translateY(0);
-  }
-}
-
-
-/* Hide Spline "Built with Spline" badge if present */
-.spline-badge,
-.made-with-spline,
-.spline-credit,
-.splinetool-credit,
-.spline-logo,
-a[href*="spline.design"],
-img[alt*="Spline"] {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}

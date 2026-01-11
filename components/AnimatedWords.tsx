@@ -1,0 +1,58 @@
+import { motion, useScroll, useTransform } from 'framer-motion';
+import styles from './intro/intro.module.scss';
+import { getThreshold, getFadeDistance } from '@/exports/export';
+import { GLOBAL_ANIM_DELAY } from '../exports/animationConfig';
+
+export const lines = ["MINIMAL. IMPACTFUL.", "DIGITAL EXPERIENCES"];
+// animation timing constants (seconds)
+export const STAGGER = 0.5; // seconds between words
+export const WORD_DURATION = 0.6;
+function AnimatedWords() {
+
+    const threshold = getThreshold();
+    const fadeDistance = getFadeDistance();
+    const { scrollY } = useScroll();
+
+    const vh = typeof window !== "undefined" ? window.innerHeight : 0;
+
+    const fadeStart = vh * 2; // 20vh
+    const fadeEnd = vh * 3; // 40vh
+
+
+    let count = 0; // cumulative word index for stagger
+    // Keep opacity = 1 until we pass threshold, then fade to 0 across fadeDistance.
+    const opacity = useTransform(scrollY, [0, threshold + fadeDistance + 200, threshold + fadeDistance + 200 + 200], [1, 1, 0]);
+    const scale = useTransform(scrollY, [threshold + fadeDistance, threshold + fadeDistance + 200], [1, 2]);
+
+    return (
+
+        <motion.div
+            className={styles.introWords}
+            style={{ scale, opacity, transformOrigin: 'center center' }}
+        >
+
+            {lines.map((line, lineIndex) => (
+                <div key={lineIndex} className={styles.line}>
+                    {line.split(' ').map((word, wi) => {
+                        const idx = count;
+                        const key = `${lineIndex}-${wi}`;
+                        count += 1;
+                        return (
+                            <motion.span
+                                key={key}
+                                className={styles.word}
+                                initial={{ opacity: 0, y: 22 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: GLOBAL_ANIM_DELAY + idx * STAGGER, type: 'spring', stiffness: 120, damping: 18 }}
+                            >
+                                {word + '\u00A0'}
+                            </motion.span>
+                        );
+                    })}
+                </div>
+            ))}
+        </motion.div>
+    )
+}
+
+export default AnimatedWords

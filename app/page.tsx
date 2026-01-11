@@ -1,13 +1,17 @@
 
-import Intro from "@/components/Intro";
+import Services from "@/components/services/services";
 import Navbar from "@/components/Navbar";
+import OurServicesSvg from "@/components/ourServicesSvg/ourServicesSvg";
+import Intro from "@/components/intro/intro";
 
 export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="px-60">
+      <main>
         <Intro />
+        <OurServicesSvg />
+        <Services />
       </main>
     </>
   );

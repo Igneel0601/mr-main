@@ -1,0 +1,506 @@
+.section {
+  position: relative;
+  width: 100%;
+  background: transparent;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.stage {
+  width: 100vw;
+  height: 100vh;
+  /* Stronger perspective so the book reads 3D */
+  perspective: 1100px;
+  perspective-origin: 50% 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 3vw, 48px);
+  box-sizing: border-box;
+}
+
+.book {
+  --gap: 0px;
+  width: min(92vw, 1400px);
+  height: min(78vh, 820px);
+  display: flex;
+  gap: var(--gap);
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+/* -------------------------------------------------------------------------- */
+/* react-pageflip                                                              */
+/* -------------------------------------------------------------------------- */
+
+.flipBook {
+  width: min(92vw, 1400px);
+  height: min(78vh, 820px);
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  z-index: 0;
+
+  /* Pop the whole book forward a bit */
+  transform: translateZ(46px) rotateX(1.6deg);
+  /* On a dark site bg, add a faint rim-light so the book doesn't look flat */
+  filter:
+    drop-shadow(0 34px 70px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 0 34px rgba(141, 122, 255, 0.22))
+    drop-shadow(0 0 10px rgba(255, 255, 255, 0.08));
+
+  /* Ambient base shadow + subtle spine highlight */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -18px -22px -26px -22px;
+    border-radius: 26px;
+    background:
+      /* base shadow */
+      radial-gradient(720px 300px at 50% 108%, rgba(0, 0, 0, 0.65), transparent 62%),
+      /* purple ambient glow */
+      radial-gradient(520px 280px at 35% 25%, rgba(141, 122, 255, 0.18), transparent 62%),
+      /* soft rim light to separate from dark bg */
+      radial-gradient(900px 520px at 50% 45%, rgba(255, 255, 255, 0.10), transparent 65%);
+    filter: blur(10px);
+    opacity: 0.8;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: 50%;
+    width: 2px;
+    transform: translateX(-1px);
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(79, 70, 229, 0.18),
+      rgba(255, 255, 255, 0.65),
+      rgba(79, 70, 229, 0.12),
+      transparent
+    );
+    opacity: 0.65;
+    pointer-events: none;
+    z-index: 5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flipBook {
+    transform: none;
+    filter: none;
+  }
+}
+
+/* Individual page element passed to HTMLFlipBook */
+.page {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  // Grain texture overlay
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  // Vertical accent line on right edge
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 10%;
+    bottom: 10%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(79, 70, 229, 0.22), transparent);
+    pointer-events: none;
+    z-index: 2;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Contents page                                                               */
+/* -------------------------------------------------------------------------- */
+
+.contents {
+  height: 100%;
+  padding: clamp(20px, 2.8vw, 48px);
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.contentsHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.contentsTitle {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.35rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.contentsHint {
+  font-size: 0.95rem;
+  opacity: 0.7;
+  color: rgba(79, 70, 229, 0.65);
+}
+
+.contentsList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.contentsItem {
+  appearance: none;
+  width: 100%;
+  border: 1px solid rgba(79, 70, 229, 0.18);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+  color: rgba(15, 23, 42, 0.92);
+  padding: 12px 14px;
+  text-align: left;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.08);
+
+  &:hover {
+    border-color: rgba(79, 70, 229, 0.35);
+    background: rgba(79, 70, 229, 0.05);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+  }
+}
+
+.contentsNum {
+  font-weight: 700;
+  color: rgba(79, 70, 229, 0.75);
+  font-variant-numeric: tabular-nums;
+}
+
+.contentsName {
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+/* Small jump button on service pages */
+.contentsJump {
+  position: absolute;
+  top: clamp(16px, 2vw, 28px);
+  right: clamp(16px, 2vw, 28px);
+  z-index: 12;
+  border: 1px solid rgba(79, 70, 229, 0.25);
+  background: rgba(255, 255, 255, 0.85);
+  color: rgba(79, 70, 229, 0.95);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12);
+
+  &:hover {
+    border-color: rgba(79, 70, 229, 0.4);
+    background: rgba(79, 70, 229, 0.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Preload (all pages mounted once)                                            */
+/* -------------------------------------------------------------------------- */
+
+.preload {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  left: -9999px;
+  top: -9999px;
+}
+
+.preloadItem {
+  width: 600px;
+  height: 600px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Slots                                                                       */
+/* -------------------------------------------------------------------------- */
+
+.leftSlot,
+.rightSlot {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Pages                                                                       */
+/* -------------------------------------------------------------------------- */
+
+.currentLeft,
+.currentRight,
+.nextRightBase,
+.page {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  /* Paper surface + subtle inner-edge shading */
+  background:
+    linear-gradient(135deg, #ffffff 0%, #f7f7f3 100%),
+    linear-gradient(
+      90deg,
+      rgba(15, 23, 42, 0.07) 0%,
+      rgba(15, 23, 42, 0.0) 10%,
+      rgba(15, 23, 42, 0.0) 90%,
+      rgba(15, 23, 42, 0.05) 100%
+    );
+  border: 1px solid rgba(79, 70, 229, 0.18);
+  box-shadow:
+    /* Outer lift for dark site backgrounds */
+    0 36px 95px rgba(0, 0, 0, 0.55),
+    0 2px 12px rgba(79, 70, 229, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.75) inset,
+    /* Inner shadows (book depth) */
+    inset 0 22px 34px rgba(15, 23, 42, 0.07),
+    inset 0 -20px 28px rgba(15, 23, 42, 0.06),
+    inset 22px 0 40px rgba(15, 23, 42, 0.055),
+    inset -22px 0 40px rgba(15, 23, 42, 0.065);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.currentLeft {
+  z-index: 6;
+}
+
+.currentRight {
+  z-index: 3;
+  opacity: 1;
+  transition: opacity 0.15s linear;
+}
+
+.nextRightBase {
+  z-index: 1;
+  background: linear-gradient(135deg, #fbfbf7 0%, #f2f2ed 100%);
+  border-color: rgba(79, 70, 229, 0.14);
+}
+
+.page {
+  position: relative;
+}
+
+/* Hide current right ONLY while flipping */
+.rightSlot[data-flipping='true'] .currentRight {
+  opacity: 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Service card layout                                                         */
+/* -------------------------------------------------------------------------- */
+
+.currentLeft :global(.service-card-root),
+.currentRight :global(.service-card-root),
+.nextRightBase :global(.service-card-root),
+.page :global(.service-card-root) {
+  height: 100%;
+  padding: clamp(20px, 2.8vw, 48px);
+  background: transparent;
+  position: relative;
+  z-index: 10;
+}
+
+.currentLeft :global(.service-card-title),
+.currentRight :global(.service-card-title),
+.nextRightBase :global(.service-card-title),
+.page :global(.service-card-title) {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  background: linear-gradient(135deg, #0f172a 0%, #4f46e5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.currentLeft :global(.service-card-subtitle),
+.currentRight :global(.service-card-subtitle),
+.nextRightBase :global(.service-card-subtitle),
+.page :global(.service-card-subtitle) {
+  margin-top: 0.75rem;
+  opacity: 0.85;
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  color: rgba(15, 23, 42, 0.72);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Flip sheet                                                                  */
+/* -------------------------------------------------------------------------- */
+
+.flipSheet {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  will-change: transform;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.flipShadow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.22), rgba(15, 23, 42, 0));
+  border-radius: 18px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.flipFaceFront,
+.flipFaceBack {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.flipFaceFront {
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f0 100%);
+  border: 1px solid rgba(79, 70, 229, 0.14);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.45),
+    0 2px 12px rgba(79, 70, 229, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.flipFaceBack {
+  transform: rotateY(180deg);
+  background: linear-gradient(135deg, #fbfbf7 0%, #f2f2ed 100%);
+  border: 1px solid rgba(79, 70, 229, 0.12);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.42),
+    0 2px 10px rgba(79, 70, 229, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.flipFaceFront :global(.service-card-root),
+.flipFaceBack :global(.service-card-root) {
+  height: 100%;
+  padding: clamp(20px, 2.8vw, 48px);
+  background: transparent;
+}
+
+.flipFaceFront :global(.service-card-title),
+.flipFaceBack :global(.service-card-title) {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  background: linear-gradient(135deg, #0f172a 0%, #4f46e5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.flipFaceFront :global(.service-card-subtitle),
+.flipFaceBack :global(.service-card-subtitle) {
+  margin-top: 0.75rem;
+  opacity: 0.85;
+  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+  color: rgba(15, 23, 42, 0.72);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Numbers & bullets                                                           */
+/* -------------------------------------------------------------------------- */
+
+.bigNumber {
+  position: absolute;
+  top: -0.5rem;
+  left: -0.25rem;
+  font-size: clamp(60px, 7vw, 120px);
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(79, 70, 229, 0.10);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.bullets {
+  margin-top: 1.25rem;
+  padding-left: 1.4rem;
+  line-height: 1.7;
+  color: rgba(15, 23, 42, 0.72);
+}
+
+.bullets li {
+  margin: 0.35rem 0;
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+}
+
+.bullets li::marker {
+  color: rgba(79, 70, 229, 0.55);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Decorative corner element                                                   */
+/* -------------------------------------------------------------------------- */
+
+.page {
+  // Corner sparkle decoration
+  .bigNumber + :global(.service-card-root)::after {
+    content: '';
+    position: absolute;
+    bottom: clamp(20px, 3vw, 40px);
+    right: clamp(20px, 3vw, 40px);
+    width: 40px;
+    height: 40px;
+    opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0L23.09 16.91L40 20L23.09 23.09L20 40L16.91 23.09L0 20L16.91 16.91L20 0Z' fill='%238d7aff'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+  }
+}
