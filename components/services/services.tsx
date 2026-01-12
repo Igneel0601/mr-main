@@ -4,7 +4,24 @@ import Image from 'next/image'
 import styles from './services.module.scss'
 import ServiceCard from '../ServiceCard'
 
-type HTMLFlipBookComponent = React.ComponentType<any>
+type HTMLFlipBookComponent = React.ComponentType<React.PropsWithChildren<Record<string, unknown>>>
+
+type PageFlipApi = {
+  flip: (pageIndex: number, corner?: 'top' | 'bottom' | 'left' | 'right') => void
+  turnToPage?: (pageIndex: number) => void
+}
+
+type PageFlipRef = {
+  pageFlip?: () => PageFlipApi
+}
+
+const isModuleWithDefault = (mod: unknown): mod is { default: HTMLFlipBookComponent } => {
+  return typeof mod === 'object' && mod !== null && 'default' in mod
+}
+
+const isComponent = (mod: unknown): mod is HTMLFlipBookComponent => {
+  return typeof mod === 'function'
+}
 
 type ServicePage = {
   id: string
@@ -199,23 +216,64 @@ const BlankPage = React.forwardRef<HTMLDivElement>(function BlankPage(props, ref
   return <div ref={ref} className={styles.page} />
 })
 
+type CoverPageProps = {
+  subtitle?: string
+}
+
+const CoverPage = React.forwardRef<HTMLDivElement, CoverPageProps>(function CoverPage(
+  { subtitle = 'Tap to open' },
+  ref
+) {
+  return (
+    <div ref={ref} className={`${styles.page} ${styles.coverPage}`}>
+      <div className={styles.coverSurface}>
+        <div className={styles.coverGlow} aria-hidden="true" />
+
+        <div className={styles.coverTop}>
+          <div className={styles.coverMeta}>Brand • Design • Development</div>
+        </div>
+
+        <div className={styles.coverCenter}>
+          <div className={styles.coverTitle}>Services</div>
+          <div className={styles.coverSubtitle}>{subtitle}</div>
+        </div>
+
+        <div className={styles.coverBottom}>
+          <div className={styles.coverRule} aria-hidden="true" />
+          <div className={styles.coverFootnote}>A studio built for modern products</div>
+        </div>
+      </div>
+    </div>
+  )
+})
+
 export default function Services() {
   const stageRef = useRef<HTMLDivElement | null>(null)
-  const bookRef = useRef<any>(null)
+  const bookRef = useRef<PageFlipRef | null>(null)
   const [pageSize, setPageSize] = useState<{ width: number; height: number } | null>(null)
   const [FlipBook, setFlipBook] = useState<HTMLFlipBookComponent | null>(null)
-  const [currentPageIndex, setCurrentPageIndex] = useState(0)
   const [usePortraitMode, setUsePortraitMode] = useState(false)
 
   useEffect(() => {
     let mounted = true
     import('react-pageflip')
-      .then((mod: any) => {
+      .then((mod: unknown) => {
         if (!mounted) return
-        setFlipBook(() => mod?.default ?? mod)
+
+        if (isModuleWithDefault(mod)) {
+          setFlipBook(() => mod.default)
+          return
+        }
+
+        if (isComponent(mod)) {
+          setFlipBook(() => mod)
+          return
+        }
+
+        console.error('Failed to load react-pageflip: unexpected module shape')
       })
-      .catch((e) => {
-        console.error('Failed to load react-pageflip:', e)
+      .catch((err) => {
+        console.error('Failed to load react-pageflip:', err)
       })
     return () => {
       mounted = false
@@ -261,12 +319,14 @@ export default function Services() {
   const goToPage = (pageIndex: number) => {
     if (!bookRef.current) return
     try {
-      const api = bookRef.current.pageFlip?.() ?? bookRef.current.pageFlip()
+      const api = bookRef.current.pageFlip?.()
+      if (!api) return
       // Animated navigation
       api.flip(pageIndex, 'bottom')
-    } catch (e) {
+    } catch {
       try {
-        const api = bookRef.current?.pageFlip?.() ?? bookRef.current?.pageFlip?.()
+        const api = bookRef.current?.pageFlip?.()
+        if (!api) return
         api?.turnToPage?.(pageIndex)
       } catch (e2) {
         console.error('Failed to flip/turn page:', e2)
@@ -274,16 +334,12 @@ export default function Services() {
     }
   }
 
-  const goToContents = () => goToPage(1)
+  // Cover is page 0, empty page is page 1, Contents is page 2.
+  const goToContents = () => goToPage(2)
 
-  // Blank page is index 0, Contents is index 1, services start at index 2.
+  // Cover is index 0, Blank is index 1, Contents is index 2, services start at index 3.
   const onSelectServiceFromContents = (serviceIndex: number) => {
-    goToPage(serviceIndex + 2)
-  }
-
-  const onFlip = (e: { data: number | string }) => {
-    const n = typeof e.data === 'number' ? e.data : Number.parseInt(String(e.data), 10)
-    if (!Number.isNaN(n)) setCurrentPageIndex(n)
+    goToPage(serviceIndex + 3)
   }
 
   return (
@@ -309,15 +365,15 @@ export default function Services() {
               startZIndex={0}
               autoSize
               maxShadowOpacity={0.45}
-              showCover={false}
+              showCover
               mobileScrollSupport
               clickEventForward={true}
               useMouseEvents={true}
               swipeDistance={30}
               showPageCorners={false}
-              disableFlipByClick={true}
-              onFlip={onFlip}
+              disableFlipByClick={false}
             >
+              <CoverPage />
               <BlankPage />
               <ContentsPage items={pages} onSelect={onSelectServiceFromContents} />
               {pages.map((p, i) => (

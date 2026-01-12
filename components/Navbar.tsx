@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, useScroll, useAnimation } from 'framer-motion';
-import { GLOBAL_ANIM_DELAY } from '../exports/animationConfig';
-import { useNavContext } from '../context/NavContext';
+import { motion } from "framer-motion";
+import { useNavContext } from "../context/NavContext";
+import { GLOBAL_ANIM_DELAY } from "../exports/animationConfig";
 
 type LenisLike = {
   scrollTo: (
@@ -21,52 +21,41 @@ type LenisLike = {
 };
 
 export default function Navbar() {
-  const { scrollY } = useScroll();
-  const lastY = useRef(0);
-  const { navHidden, setNavHidden, setNavHeight } = useNavContext();
+  const { navHidden, setNavHidden, setNavHeight, navHeight } = useNavContext();
   const navRef = useRef<HTMLElement | null>(null);
+  const hasEntered = useRef(false);
   const router = useRouter();
   const pathname = usePathname();
 
+  // hide/show based on scroll direction (no animation)
   useEffect(() => {
-    const unsubscribe = scrollY.on("change", (y) => {
-      const prev = lastY.current;
-      const delta = y - prev;
+    let lastY = window.scrollY ?? 0;
+
+    const onScroll = () => {
+      const y = window.scrollY ?? 0;
+      const delta = y - lastY;
 
       if (delta > 5 && y > 10) setNavHidden(true);
       else if (delta < -5) setNavHidden(false);
 
-      lastY.current = y;
-    });
+      lastY = y;
+    };
 
-    return () => unsubscribe();
-  }, [scrollY, setNavHidden]);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [setNavHidden]);
 
   // measure nav height and expose it through context so other components can offset accordingly
   useEffect(() => {
-    function updateHeight() {
+    const updateHeight = () => {
       const h = document.getElementById("navbar")?.offsetHeight || 80;
       setNavHeight(h);
-    }
+    };
 
     updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
+    window.addEventListener("resize", updateHeight);
+    return () => window.removeEventListener("resize", updateHeight);
   }, [setNavHeight]);
-
-  const controls = useAnimation();
-
-  useEffect(() => {
-    // entrance using a tween (no spring) — apply global entrance delay
-    controls.start({ y: 0, opacity: 1, transition: { type: 'tween', delay: GLOBAL_ANIM_DELAY, duration: 0.48, ease: [0.22, 1, 0.36, 1] } });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    // hide/show also uses the same tween to avoid switching animation types
-    const hideY = -(document.getElementById("navbar")?.offsetHeight || 80);
-    controls.start({ y: navHidden ? hideY : 0, opacity: navHidden ? 0 : 1, transition: { type: 'tween', duration: 0.38, ease: [0.22, 1, 0.36, 1] } });
-  }, [navHidden, controls]);
 
   const scrollToSection = (id: string) => {
     // If we are not on the home page, navigate there with a hash.
@@ -79,14 +68,13 @@ export default function Navbar() {
     const el = document.getElementById(id);
     if (!el) return;
 
-    // Prefer Lenis (already used by ScrollProvider) for controllable slow scroll.
     const lenis = (window as unknown as { lenis?: LenisLike }).lenis;
     if (lenis?.scrollTo) {
       lenis.scrollTo(el, {
         duration: 2.2,
         easing: (t: number) => 1 - Math.pow(1 - t, 3),
       });
-      // Keep URL hash in sync without jumping.
+
       try {
         window.history.replaceState(null, "", `#${id}`);
       } catch {
@@ -95,17 +83,49 @@ export default function Navbar() {
       return;
     }
 
-    // Fallback
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  const hideY = -(navHeight || 80);
 
   return (
     <motion.nav
       id="navbar"
       ref={navRef}
       className="fixed top-0 inset-x-0 z-999 h-20 bg-white/0 backdrop-blur-md text-white"
-      initial={{ y: -(navRef.current?.offsetHeight ?? 80), opacity: 0 }}
-      animate={controls}
+      initial={{ y: -8, opacity: 0 }}
+      animate={{
+        y: navHidden ? hideY : 0,
+        opacity: navHidden ? 0 : 1,
+      }}
+      transition={{
+        y:
+          navHidden || hasEntered.current
+            ? {
+                type: "spring",
+                stiffness: 520,
+                damping: 44,
+                mass: 0.9,
+              }
+            : {
+                type: "tween",
+                delay: GLOBAL_ANIM_DELAY,
+                duration: 0.85,
+                ease: [0.22, 1, 0.36, 1],
+              },
+        opacity:
+          navHidden || hasEntered.current
+            ? { duration: 0.18 }
+            : {
+                delay: GLOBAL_ANIM_DELAY,
+                duration: 0.85,
+                ease: [0.22, 1, 0.36, 1],
+              },
+      }}
+      onAnimationComplete={() => {
+        if (!hasEntered.current) hasEntered.current = true;
+      }}
+      style={{ pointerEvents: navHidden ? "none" : "auto" }}
     >
       <div className="container h-full flex items-center justify-between">
         <Link href="/" className="flex items-center gap-0 logo-link">
@@ -117,8 +137,14 @@ export default function Navbar() {
             <span className="text-sm font-normal whitespace-nowrap">RAVAN</span>
           </div>
         </Link>
+
         <div className="flex gap-18">
-          <a href="#" className="relative hover:text-[#8d7aff] after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-[#8d7aff] after:transition-all after:duration-300 hover:after:w-full">PROJECTS</a>
+          <a
+            href="#"
+            className="relative hover:text-[#8d7aff] after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-[#8d7aff] after:transition-all after:duration-300 hover:after:w-full"
+          >
+            PROJECTS
+          </a>
           <a
             href="#services"
             onClick={(e) => {
@@ -129,8 +155,14 @@ export default function Navbar() {
           >
             SERVICES
           </a>
-          <a href="#" className="relative hover:text-[#8d7aff] after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-[#8d7aff] after:transition-all after:duration-300 hover:after:w-full">ABOUT</a>
+          <a
+            href="#"
+            className="relative hover:text-[#8d7aff] after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-[#8d7aff] after:transition-all after:duration-300 hover:after:w-full"
+          >
+            ABOUT
+          </a>
         </div>
+
         <div className="flex">
           <a href="/contact" className="rounded-full border border-[#8d7aff] py-3 px-8 no-scale">
             <span className="inline-block">GET IN TOUCH</span>
