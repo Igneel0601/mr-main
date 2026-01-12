@@ -19,8 +19,36 @@ export default function CustomCursor() {
       const target = e.target as HTMLElement;
       const isInteractive = target.closest('a, button, input, textarea, select, [role="button"]') as HTMLElement;
       const ignoreCursor = target.closest('.no-cursor') as HTMLElement;
+      const disableHoverEffects = !!target.closest('.no-hover') || !!isInteractive?.classList.contains('no-hover');
+
+      const textField = target.closest(
+        'textarea, [contenteditable=""], [contenteditable="true"], input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="button"]):not([type="submit"]):not([type="reset"])'
+      ) as HTMLElement | null;
+      const isTextField = !!textField;
 
       const popUnderPointer = target.closest('.cursor-pop') as HTMLElement | null;
+
+      if (!ignoreCursor && isTextField) {
+        isHoveringInteractive = false;
+        cursor.style.opacity = '1';
+        cursor.classList.remove('hover');
+        cursor.classList.add('text');
+
+        for (const el of currentHoveredElements) el.classList.remove('cursor-hovered')
+        currentHoveredElements = []
+        return;
+      }
+
+      cursor.classList.remove('text');
+
+      if (disableHoverEffects) {
+        isHoveringInteractive = false;
+        cursor.style.opacity = '1';
+        cursor.classList.remove('hover');
+        for (const el of currentHoveredElements) el.classList.remove('cursor-hovered')
+        currentHoveredElements = []
+        return;
+      }
       
       // Exclude logo link from cursor effects
       if (!ignoreCursor && isInteractive && !isInteractive.classList.contains('logo-link')) {

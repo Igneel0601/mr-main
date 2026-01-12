@@ -4,6 +4,16 @@
   cursor: none !important;
 }
 
+::selection {
+  background: #8775F5;
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: #8775F5;
+  color: #ffffff;
+}
+
 :root {
   --color-primary: #000000;
   --color-secondary: #1f2937;
@@ -31,10 +41,28 @@ body {
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease,
+    width 0.15s ease,
+    height 0.15s ease,
+    border-radius 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
   /* Keep color consistent over light sections (e.g. Services pages) */
   mix-blend-mode: normal;
   transform: translate(-50%, -50%);
+  will-change: transform, opacity, width, height, border-radius;
+}
+
+#custom-cursor.text {
+  width: 6px;
+  height: 30px;
+  border-radius: 6px;
+  background-color: #8775F5;
+  opacity: 0.95;
+  transform: translate(-50%, -50%) scale(1);
+  box-shadow: 0 0 0 1px rgba(135, 117, 245, 0.2);
 }
 
 #custom-cursor.hover {
@@ -149,5 +177,12 @@ body::before {
 
 .text-secondar {
   color: var(--color-text-secondary);
+}
+
+.container {
+  width: 100%;
+  max-width: auto;
+  margin-inline: auto;
+  /* padding-inline: clamp(12px, 3vw, 24px); */
 }
 

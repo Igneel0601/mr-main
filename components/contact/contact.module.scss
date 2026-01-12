@@ -1,0 +1,263 @@
+.page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 3vw, 40px);
+}
+
+.card {
+  position: relative;
+  width: min(1200px, 100%);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: clamp(22px, 4vw, 56px);
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.close {
+  position: absolute;
+  top: clamp(14px, 2vw, 22px);
+  right: clamp(14px, 2vw, 22px);
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: rgba(15, 23, 42, 0.7);
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background: rgba(15, 23, 42, 0.06);
+    color: rgba(15, 23, 42, 0.9);
+  }
+}
+
+.topRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: clamp(18px, 3vw, 34px);
+}
+
+.topLink {
+  color: rgba(124, 58, 237, 0.85);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: clamp(1.05rem, 1.4vw, 1.5rem);
+  letter-spacing: -0.01em;
+  display: block;
+  justify-self: start;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 2px;
+  }
+
+  &:last-child {
+    text-align: right;
+    justify-self: end;
+  }
+}
+
+/* Override global CustomCursor hover effects so top links only underline on hover */
+.topLink.cursor-hovered {
+  color: rgba(124, 58, 237, 0.85) !important;
+  transform: none !important;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.lead {
+  font-size: clamp(1.1rem, 2vw, 2.1rem);
+  line-height: 1.25;
+  margin: 0;
+}
+
+.leadLine {
+  margin: 0 0 10px 0;
+}
+
+.inlineInput {
+  border: 0;
+  border-bottom: 2px solid rgba(15, 23, 42, 0.25);
+  background: transparent;
+  padding: 6px 2px 4px;
+  font: inherit;
+  color: rgba(15, 23, 42, 0.92);
+  caret-color: #8775F5;
+  display: inline-block;
+  vertical-align: baseline;
+  margin: 0;
+  width: auto;
+  max-width: 100%;
+  outline: none;
+
+  &::placeholder {
+    color: rgba(15, 23, 42, 0.35);
+  }
+
+  &:focus {
+    border-bottom-color: rgba(124, 58, 237, 0.6);
+  }
+
+  &::selection {
+    background: #8775F5;
+    color: #ffffff;
+  }
+}
+
+/* Autofill styling (Chrome/Safari/Edge) */
+.inlineInput:-webkit-autofill,
+.inlineInput:-webkit-autofill:hover,
+.inlineInput:-webkit-autofill:focus,
+.inlineInput:-webkit-autofill:active {
+  -webkit-text-fill-color: currentColor;
+  caret-color: #8775F5;
+  transition: background-color 9999s ease-in-out 0s;
+  box-shadow: 0 0 0 1000px transparent inset;
+}
+
+/* Autofill styling (Firefox) */
+.inlineInput:-moz-autofill {
+  box-shadow: 0 0 0 1000px transparent inset;
+  -moz-text-fill-color: currentColor;
+  caret-color: #8775F5;
+}
+
+.nameInput {
+  width: auto;
+}
+
+.emailInput {
+  min-width: 18ch;
+}
+
+.phoneInput {
+  width: auto;
+}
+
+.textarea {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.15);
+  background: transparent;
+  padding: 8px 0;
+  font-size: clamp(1.25rem, 2.2vw, 2.3rem);
+  line-height: 1.25;
+  color: rgba(15, 23, 42, 0.92);
+  min-height: 44px;
+  max-height: 220px;
+  overflow-y: hidden;
+  resize: none;
+  outline: none;
+  caret-color: #8775F5;
+
+  &::placeholder {
+    color: rgba(15, 23, 42, 0.32);
+  }
+
+  &::selection {
+    background: #8775F5;
+    color: #ffffff;
+  }
+}
+
+.sectionTitle {
+  font-size: clamp(1.15rem, 1.8vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 6px;
+}
+
+.chips {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.chip {
+  appearance: none;
+  border: 1px solid rgba(15, 23, 42, 0.18);
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: clamp(1.05rem, 1.4vw, 1.75rem);
+  color: rgba(15, 23, 42, 0.85);
+  cursor: pointer;
+  transition: none;
+  text-align: left;
+}
+
+.chipActive {
+  border-color: #8775F5;
+  background: #8775F5;
+  color: white;
+}
+
+.actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit {
+  border: 1px solid rgba(124, 58, 237, 0.45);
+  background: rgba(124, 58, 237, 0.12);
+  color: rgba(124, 58, 237, 0.92);
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    background: rgba(124, 58, 237, 0.18);
+    border-color: rgba(124, 58, 237, 0.65);
+    transform: translateY(-1px);
+  }
+}
+
+@media (max-width: 980px) {
+  .chips {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .topRow {
+    grid-template-columns: 1fr;
+  }
+
+  .topLink:last-child {
+    text-align: left;
+  }
+}
+
+@media (max-width: 560px) {
+  .chips {
+    grid-template-columns: 1fr;
+  }
+
+  .inlineInput {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+  }
+}

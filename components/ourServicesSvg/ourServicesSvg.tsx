@@ -253,33 +253,40 @@ export default function OurServicesSvg() {
   return (
     <div
       ref={containerRef}
-      className="w-screen relative"
+      className="w-full relative"
       style={{ height: containerHeightPx }}
     >
       <motion.div
-        className="sticky top-1/2 -translate-y-1/2 flex items-center justify-center"
+        className="sticky top-1/2 -translate-y-1/2 flex w-full items-center justify-center"
         style={{
           scale: outroScale,
           opacity: outroOpacity,
         }}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="90%" viewBox="50 430 1830 180">
-          {paths.map((d, i) => (
-            <motion.path
-              key={i}
-              d={d}
-              fill="none"
-              stroke="#fff"
-              strokeWidth="15"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeDasharray={lengths[i]}
-              style={{
-                strokeDashoffset: dashTransforms[i],
-              }}
-            />
-          ))}
-        </svg>
+        <div className="w-full overflow-x-hidden flex justify-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="50 430 1830 180"
+            preserveAspectRatio="xMidYMid meet"
+            className="w-full"
+          >
+            {paths.map((d, i) => (
+              <motion.path
+                key={i}
+                d={d}
+                fill="none"
+                stroke="#fff"
+                strokeWidth="15"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeDasharray={lengths[i]}
+                style={{
+                  strokeDashoffset: dashTransforms[i],
+                }}
+              />
+            ))}
+          </svg>
+        </div>
       </motion.div>
     </div>
   );

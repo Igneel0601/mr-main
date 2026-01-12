@@ -1,6 +1,6 @@
 'use client';
 
-import Spline from '@splinetool/react-spline/next';
+import Spline from '@splinetool/react-spline';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import styles from './intro.module.scss';
 import AnimatedWords from '@/components/AnimatedWords';
@@ -50,7 +50,7 @@ export default function Intro() {
                 >
                     <Spline
                         scene="https://prod.spline.design/MgluQXrL5N7glBkd/scene.splinecode"
-                        style={{ width: '100%', height: '100%', transform: 'translate(0, 15%) translateY(0)' }}
+                        className={styles.splineScene}
                     />
                 </motion.div>
 

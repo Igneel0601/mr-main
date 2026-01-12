@@ -6,13 +6,13 @@ import Intro from "@/components/intro/intro";
 
 export default function Home() {
   return (
-    <>
+    <div className="container">
       <Navbar />
       <main>
         <Intro />
         <OurServicesSvg />
         <Services />
       </main>
-    </>
+    </div>
   );
 }
