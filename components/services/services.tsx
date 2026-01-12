@@ -217,16 +217,34 @@ const BlankPage = React.forwardRef<HTMLDivElement>(function BlankPage(props, ref
 })
 
 type CoverPageProps = {
+  onOpen?: () => void
   subtitle?: string
 }
 
 const CoverPage = React.forwardRef<HTMLDivElement, CoverPageProps>(function CoverPage(
-  { subtitle = 'Tap to open' },
+  { onOpen, subtitle = 'Tap to open' },
   ref
 ) {
   return (
     <div ref={ref} className={`${styles.page} ${styles.coverPage}`}>
-      <div className={styles.coverSurface}>
+      <div
+        className={`${styles.coverSurface} cursor-show`}
+        role={onOpen ? 'button' : undefined}
+        tabIndex={onOpen ? 0 : undefined}
+        onClick={(e) => {
+          if (!onOpen) return
+          e.preventDefault()
+          e.stopPropagation()
+          onOpen()
+        }}
+        onKeyDown={(e) => {
+          if (!onOpen) return
+          if (e.key !== 'Enter' && e.key !== ' ') return
+          e.preventDefault()
+          e.stopPropagation()
+          onOpen()
+        }}
+      >
         <div className={styles.coverGlow} aria-hidden="true" />
 
         <div className={styles.coverTop}>
@@ -339,7 +357,10 @@ export default function Services() {
 
   // Cover is index 0, Blank is index 1, Contents is index 2, services start at index 3.
   const onSelectServiceFromContents = (serviceIndex: number) => {
-    goToPage(serviceIndex + 3)
+    // In 2-page spread mode, jump to the LEFT page of the spread so selecting 6 shows 5–6.
+    const baseIndex = serviceIndex + 3
+    const targetIndex = usePortraitMode ? baseIndex : serviceIndex % 2 === 1 ? baseIndex - 1 : baseIndex
+    goToPage(targetIndex)
   }
 
   return (
@@ -371,9 +392,9 @@ export default function Services() {
               useMouseEvents={true}
               swipeDistance={30}
               showPageCorners={false}
-              disableFlipByClick={false}
+              disableFlipByClick={true}
             >
-              <CoverPage />
+              <CoverPage onOpen={goToContents} />
               <BlankPage />
               <ContentsPage items={pages} onSelect={onSelectServiceFromContents} />
               {pages.map((p, i) => (
