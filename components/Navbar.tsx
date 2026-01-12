@@ -3,15 +3,30 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from 'react';
+import { usePathname, useRouter } from "next/navigation";
 import { motion, useScroll, useAnimation } from 'framer-motion';
 import { GLOBAL_ANIM_DELAY } from '../exports/animationConfig';
 import { useNavContext } from '../context/NavContext';
+
+type LenisLike = {
+  scrollTo: (
+    target: string | number | HTMLElement,
+    options?: {
+      offset?: number;
+      duration?: number;
+      immediate?: boolean;
+      easing?: (t: number) => number;
+    }
+  ) => void;
+};
 
 export default function Navbar() {
   const { scrollY } = useScroll();
   const lastY = useRef(0);
   const { navHidden, setNavHidden, setNavHeight } = useNavContext();
   const navRef = useRef<HTMLElement | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = scrollY.on("change", (y) => {
@@ -53,6 +68,37 @@ export default function Navbar() {
     controls.start({ y: navHidden ? hideY : 0, opacity: navHidden ? 0 : 1, transition: { type: 'tween', duration: 0.38, ease: [0.22, 1, 0.36, 1] } });
   }, [navHidden, controls]);
 
+  const scrollToSection = (id: string) => {
+    // If we are not on the home page, navigate there with a hash.
+    // HashScrollHandler will take care of the slow scroll after navigation.
+    if (pathname !== "/") {
+      router.push(`/#${id}`);
+      return;
+    }
+
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    // Prefer Lenis (already used by ScrollProvider) for controllable slow scroll.
+    const lenis = (window as unknown as { lenis?: LenisLike }).lenis;
+    if (lenis?.scrollTo) {
+      lenis.scrollTo(el, {
+        duration: 2.2,
+        easing: (t: number) => 1 - Math.pow(1 - t, 3),
+      });
+      // Keep URL hash in sync without jumping.
+      try {
+        window.history.replaceState(null, "", `#${id}`);
+      } catch {
+        // ignore
+      }
+      return;
+    }
+
+    // Fallback
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <motion.nav
       id="navbar"
@@ -73,7 +119,16 @@ export default function Navbar() {
         </Link>
         <div className="flex gap-18">
           <a href="#" className="relative hover:text-[#8d7aff] after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-[#8d7aff] after:transition-all after:duration-300 hover:after:w-full">PROJECTS</a>
-          <a href="#" className="relative hover:text-[#8d7aff] after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-[#8d7aff] after:transition-all after:duration-300 hover:after:w-full">SERVICES</a>
+          <a
+            href="#services"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection("services");
+            }}
+            className="relative hover:text-[#8d7aff] after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-[#8d7aff] after:transition-all after:duration-300 hover:after:w-full"
+          >
+            SERVICES
+          </a>
           <a href="#" className="relative hover:text-[#8d7aff] after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-0.5 after:bg-[#8d7aff] after:transition-all after:duration-300 hover:after:w-full">ABOUT</a>
         </div>
         <div className="flex">

@@ -107,7 +107,7 @@
 // }
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
 import { motion, useMotionValue, useTransform, circOut } from "framer-motion";
 
 const FADE_RELEASE = 0; // fade to 0 smoothly
@@ -140,10 +140,17 @@ export default function OurServicesSvg() {
   const [containerHeightPx, setContainerHeightPx] = useState(0);
 
   // Set height = sticky + draw + fade space
-  useEffect(() => {
-    const vh = window.innerHeight;
+  useLayoutEffect(() => {
     const fadeScreens = 0.45; // fade window
-    setContainerHeightPx(vh * (1 + drawScreens + fadeScreens));
+
+    const compute = () => {
+      const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+      setContainerHeightPx(vh * (1 + drawScreens + fadeScreens));
+    };
+
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
   }, [drawScreens]);
 
   // Sequential stroke animation — now driven by forward-only drawProgress

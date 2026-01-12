@@ -2,6 +2,7 @@ import "./globals.css";
 import CustomCursor from "@/components/CustomCursor";
 import ScrollProvider from '@/context/ScrollProvider';
 import { NavProvider } from '@/context/NavContext';
+import HashScrollHandler from "@/components/HashScrollHandler";
 
 export default function RootLayout({
   children,
@@ -14,6 +15,7 @@ export default function RootLayout({
         <ScrollProvider>
           <NavProvider>
             <CustomCursor />
+            <HashScrollHandler />
             {children}
           </NavProvider>
         </ScrollProvider>

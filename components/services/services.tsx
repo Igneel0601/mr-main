@@ -287,7 +287,7 @@ export default function Services() {
   }
 
   return (
-    <section className={styles.section}>
+    <section id="services" className={styles.section}>
       <div className={styles.sticky}>
         <div ref={stageRef} className={styles.stage}>
           {FlipBook && pageSize && (
