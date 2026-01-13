@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import styles from './services.module.scss'
 import ServiceCard from '../ServiceCard'
 
@@ -202,7 +203,7 @@ const ContentsPage = React.forwardRef<HTMLDivElement, ContentsPageProps>(functio
               onMouseDown={(e) => e.stopPropagation()}
               onTouchStart={(e) => e.stopPropagation()}
             >
-              <span className={`${styles.contentsNum} cursor-pop`}>{String(i + 1).padStart(2, '0')}</span>
+              <span className={styles.contentsNum}>{String(i + 1).padStart(2, '0')}</span>
               <span className={`${styles.contentsName} cursor-pop`}>{p.title}</span>
             </button>
           ))}
@@ -271,6 +272,33 @@ export default function Services() {
   const [pageSize, setPageSize] = useState<{ width: number; height: number } | null>(null)
   const [FlipBook, setFlipBook] = useState<HTMLFlipBookComponent | null>(null)
   const [usePortraitMode, setUsePortraitMode] = useState(false)
+  const [isCoarsePointer, setIsCoarsePointer] = useState(false)
+  const [mobileIndex, setMobileIndex] = useState(0)
+  const [mobileView, setMobileView] = useState<'cover' | 'contents' | 'service'>('cover')
+  const [mobileDirection, setMobileDirection] = useState<-1 | 0 | 1>(0)
+  const reduceMotion = useReducedMotion()
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const mql = window.matchMedia('(pointer: coarse)') as MediaQueryList & {
+      addListener?: (listener: () => void) => void
+      removeListener?: (listener: () => void) => void
+    }
+
+    const update = () => setIsCoarsePointer(Boolean(mql.matches))
+    update()
+
+    // Safari < 14 uses addListener/removeListener.
+    if (typeof mql.addEventListener === 'function') {
+      mql.addEventListener('change', update)
+      return () => mql.removeEventListener('change', update)
+    }
+
+    if (typeof mql.addListener === 'function') {
+      mql.addListener(update)
+      return () => mql.removeListener?.(update)
+    }
+  }, [])
 
   useEffect(() => {
     let mounted = true
@@ -316,14 +344,16 @@ export default function Services() {
       // Keep 2-page spread for laptop/desktop; only allow portrait on small screens.
       // (react-pageflip switches to single page when portrait mode is enabled.)
       const isSmall = contentW < 720
-      setUsePortraitMode(isSmall)
+      const coarse = window.matchMedia('(pointer: coarse)').matches
+      // Desktop should keep the original spread behavior; only mobile can switch to portrait.
+      setUsePortraitMode(coarse ? isSmall : false)
 
       const bookW = Math.max(320, Math.floor(Math.min(contentW * 0.92, 1400)))
       // Make the book taller to better fill the stage (reduce empty gap).
       const bookH = Math.max(460, Math.floor(Math.min(contentH * 0.90, 980)))
       // In portrait mode (single-page), react-pageflip expects `width` to be the page width.
       // In landscape spread mode, it renders two pages side-by-side (2 * page width).
-      const pageW = isSmall ? bookW : Math.floor(bookW / 2)
+      const pageW = coarse && isSmall ? bookW : Math.floor(bookW / 2)
       setPageSize({ width: pageW, height: bookH })
     }
 
@@ -336,6 +366,89 @@ export default function Services() {
       window.removeEventListener('resize', compute)
     }
   }, [])
+
+  const useMobilePager = isCoarsePointer
+
+  useEffect(() => {
+    if (useMobilePager) {
+      setMobileIndex(0)
+      setMobileView('cover')
+      setMobileDirection(0)
+    }
+  }, [useMobilePager])
+
+  const mobileSelectService = (serviceIndex: number) => {
+    setMobileIndex(Math.min(Math.max(0, serviceIndex), pages.length - 1))
+    setMobileView('service')
+    setMobileDirection(1)
+  }
+
+  const mobilePrev = () => {
+    if (mobileView === 'cover') return
+
+    if (mobileView === 'contents') {
+      setMobileView('cover')
+      setMobileDirection(-1)
+      return
+    }
+
+    // service
+    if (mobileIndex <= 0) {
+      setMobileView('contents')
+      setMobileDirection(-1)
+      return
+    }
+    setMobileDirection(-1)
+    setMobileIndex((i) => Math.max(0, i - 1))
+  }
+
+  const mobileNext = () => {
+    if (mobileView === 'cover') {
+      setMobileView('contents')
+      setMobileDirection(1)
+      return
+    }
+
+    if (mobileView === 'contents') {
+      setMobileView('service')
+      setMobileIndex(0)
+      setMobileDirection(1)
+      return
+    }
+
+    // service
+    if (mobileIndex >= pages.length - 1) {
+      setMobileView('contents')
+      setMobileDirection(1)
+      return
+    }
+    setMobileDirection(1)
+    setMobileIndex((i) => Math.min(pages.length - 1, i + 1))
+  }
+
+  const serviceStackVariants = {
+    enter: (direction: -1 | 0 | 1) => ({
+      x: direction === -1 ? -72 : 72,
+      rotateZ: direction === -1 ? -1.8 : 1.8,
+      scale: 0.992,
+      opacity: 0,
+      filter: 'blur(1.2px)',
+    }),
+    center: {
+      x: 0,
+      rotateZ: 0,
+      scale: 1,
+      opacity: 1,
+      filter: 'blur(0px)',
+    },
+    exit: (direction: -1 | 0 | 1) => ({
+      x: direction === -1 ? 78 : -78,
+      rotateZ: direction === -1 ? 2.2 : -2.2,
+      scale: 0.985,
+      opacity: 0,
+      filter: 'blur(1.2px)',
+    }),
+  } as const
 
   const goToPage = (pageIndex: number) => {
     if (!bookRef.current) return
@@ -370,7 +483,88 @@ export default function Services() {
     <section id="services" className={styles.section}>
       <div className={styles.sticky}>
         <div ref={stageRef} className={styles.stage}>
-          {FlipBook &&
+          {useMobilePager ? (
+            <div className={styles.mobilePager}>
+              <div className={styles.mobilePagerFrame}>
+                {mobileView === 'cover' && (
+                  <CoverPage onOpen={() => setMobileView('contents')} subtitle="Tap to open" />
+                )}
+
+                {mobileView === 'contents' && (
+                  <ContentsPage items={pages} onSelect={mobileSelectService} />
+                )}
+
+                {mobileView === 'service' && (
+                  <>
+                    <div className={styles.mobileStack} aria-hidden="true">
+                      <div className={`${styles.mobileStackCard} ${styles.mobileStackCard2}`} />
+                      <div className={`${styles.mobileStackCard} ${styles.mobileStackCard1}`} />
+                    </div>
+
+                    {reduceMotion ? (
+                      <div className={styles.mobileTopCard}>
+                        <Page page={pages[mobileIndex]} pageNumber={mobileIndex + 1} />
+                      </div>
+                    ) : (
+                      <AnimatePresence initial={false} custom={mobileDirection}>
+                        <motion.div
+                          key={pages[mobileIndex].id}
+                          className={styles.mobileTopCard}
+                          custom={mobileDirection}
+                          variants={serviceStackVariants}
+                          initial="enter"
+                          animate="center"
+                          exit="exit"
+                          transition={{
+                            type: 'spring',
+                            stiffness: 320,
+                            damping: 34,
+                            mass: 1.05,
+                          }}
+                        >
+                          <Page page={pages[mobileIndex]} pageNumber={mobileIndex + 1} />
+                        </motion.div>
+                      </AnimatePresence>
+                    )}
+                  </>
+                )}
+              </div>
+
+              <div className={styles.mobilePagerControls}>
+                <button
+                  type="button"
+                  className={styles.mobilePagerBtn}
+                  onClick={mobilePrev}
+                  disabled={mobileView === 'cover'}
+                  aria-label="Previous service"
+                >
+                  Prev
+                </button>
+
+                <div className={styles.mobilePagerIndicator} aria-label="Service page">
+                  {mobileView === 'cover'
+                    ? 'Cover'
+                    : mobileView === 'contents'
+                      ? 'Contents'
+                      : `${String(mobileIndex + 1).padStart(2, '0')} / ${String(pages.length).padStart(2, '0')}`}
+                </div>
+
+                <button
+                  type="button"
+                  className={styles.mobilePagerBtn}
+                  onClick={mobileNext}
+                  aria-label={
+                    mobileView === 'service' && mobileIndex === pages.length - 1
+                      ? 'Back to contents'
+                      : 'Next service'
+                  }
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          ) : (
+            FlipBook &&
             pageSize && (
               <FlipBook
                 ref={bookRef}
@@ -412,7 +606,8 @@ export default function Services() {
                   />
                 ))}
               </FlipBook>
-            )}
+            )
+          )}
         </div>
       </div>
     </section>

@@ -10,7 +10,9 @@ export default function Home() {
       <Navbar />
       <main>
         <Intro />
-        <OurServicesSvg />
+        <div className="hidden md:block">
+          <OurServicesSvg />
+        </div>
         <Services />
       </main>
     </div>

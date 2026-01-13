@@ -52,6 +52,16 @@
   margin-bottom: clamp(18px, 3vw, 34px);
 }
 
+@media (max-width: 560px) {
+  .topRow {
+    display: none;
+  }
+
+  .card {
+    padding-top: 72px;
+  }
+}
+
 .topLink {
   color: rgba(124, 58, 237, 0.85);
   text-decoration: none;

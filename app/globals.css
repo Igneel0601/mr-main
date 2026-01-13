@@ -7,6 +7,7 @@
 @media (hover: none), (pointer: coarse) {
   body {
     /* iOS/Safari can still allow horizontal panning unless html is constrained too */
+    overflow-x: hidden;
     overflow-x: clip;
     max-width: 100%;
   }
@@ -34,6 +35,35 @@
 ::-moz-selection {
   background: #8775F5;
   color: #ffffff;
+}
+
+/* Scrollbar styling */
+:root {
+  --scrollbar-thumb: #8775F5;
+  --scrollbar-track: rgba(135, 117, 245, 0.18);
+  --scrollbar-size: 10px;
+}
+
+html {
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 999px;
 }
 
 :root {

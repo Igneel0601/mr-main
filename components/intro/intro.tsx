@@ -48,10 +48,12 @@ export default function Intro() {
                     transition={{ delay: GLOBAL_ANIM_DELAY + splineFadeDelay, duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
                     style={{ scale, opacity, transformOrigin: 'center 35%' }}
                 >
-                    <Spline
-                        scene="https://prod.spline.design/MgluQXrL5N7glBkd/scene.splinecode"
-                        className={styles.splineScene}
-                    />
+                    <div className={styles.splineScene}>
+                        <Spline
+                            scene="https://prod.spline.design/MgluQXrL5N7glBkd/scene.splinecode"
+                            className={styles.splineInner}
+                        />
+                    </div>
                 </motion.div>
 
             </div>
