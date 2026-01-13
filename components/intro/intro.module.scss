@@ -23,23 +23,33 @@
   line-height: 1; /* leading-tight */
   position: relative;
   z-index: 10;
-  overflow: hidden;
+  overflow-x: visible;
+  overflow-y: hidden;
 }
 
 .line {
-  display: block;
-  overflow: hidden;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
 }
 
 .word {
   display: inline-block;
   will-change: transform, opacity;
-  margin-right: 0.6rem;
+  margin-right: 0;
   vertical-align: middle;
   transform-origin: center center;
   backface-visibility: hidden;
   -webkit-font-smoothing: antialiased;
   white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .introWords {
+    font-size: clamp(2rem, 9vw, 4rem);
+  }
 }
 
 .splineWrapper {

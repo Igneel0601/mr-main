@@ -5,6 +5,18 @@
 }
 
 @media (hover: none), (pointer: coarse) {
+  body {
+    /* iOS/Safari can still allow horizontal panning unless html is constrained too */
+    overflow-x: clip;
+    max-width: 100%;
+  }
+
+  @supports not (overflow: clip) {
+    body {
+      overflow-x: hidden;
+    }
+  }
+
   * {
     cursor: auto !important;
   }

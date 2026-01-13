@@ -33,7 +33,7 @@ function AnimatedWords() {
 
             {lines.map((line, lineIndex) => (
                 <div key={lineIndex} className={styles.line}>
-                    {line.split(' ').map((word, wi) => {
+                    {line.trim().split(/\s+/).map((word, wi) => {
                         const idx = count;
                         const key = `${lineIndex}-${wi}`;
                         count += 1;
@@ -45,7 +45,7 @@ function AnimatedWords() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: GLOBAL_ANIM_DELAY + idx * STAGGER, type: 'spring', stiffness: 120, damping: 18 }}
                             >
-                                {word + '\u00A0'}
+                                {word}
                             </motion.span>
                         );
                     })}
