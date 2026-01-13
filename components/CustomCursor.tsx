@@ -4,6 +4,14 @@ import { useEffect } from 'react';
 
 export default function CustomCursor() {
   useEffect(() => {
+    // Disable custom cursor entirely on touch / coarse pointer devices.
+    // These devices don't have a meaningful hover cursor and this can interfere with UX.
+    const prefersNativeCursor =
+      typeof window !== "undefined" &&
+      (window.matchMedia?.("(hover: none)").matches || window.matchMedia?.("(pointer: coarse)").matches);
+
+    if (prefersNativeCursor) return;
+
     const cursor = document.createElement('div');
     cursor.id = 'custom-cursor';
     document.body.appendChild(cursor);

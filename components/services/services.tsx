@@ -313,15 +313,38 @@ export default function Services() {
       const contentW = Math.max(0, el.clientWidth - paddingX)
       const contentH = Math.max(0, el.clientHeight - paddingY)
 
-      // Keep 2-page spread for laptop/desktop; only allow portrait on small screens.
-      // (react-pageflip switches to single page when portrait mode is enabled.)
-      setUsePortraitMode(contentW < 720)
+      // On mobile, force portrait mode (single page).
+      // react-pageflip switches to single page when portrait mode is enabled.
+      const isNarrowViewport = window.matchMedia?.('(max-width: 768px)').matches ?? contentW < 720
+      // Only treat as "mobile" when the device is touch/coarse-pointer.
+      // This prevents laptops/desktops from switching to portrait mode just because the window is narrow.
+      const isTouchLike =
+        (window.matchMedia?.('(pointer: coarse)').matches ?? false) ||
+        (window.matchMedia?.('(hover: none)').matches ?? false) ||
+        (typeof navigator !== 'undefined' && (navigator.maxTouchPoints ?? 0) > 0)
+      const nextUsePortrait = isTouchLike && isNarrowViewport
+      setUsePortraitMode(nextUsePortrait)
 
-      const bookW = Math.max(320, Math.floor(Math.min(contentW * 0.92, 1400)))
-      // Make the book taller to better fill the stage (reduce empty gap).
-      const bookH = Math.max(460, Math.floor(Math.min(contentH * 0.90, 980)))
-      const pageW = Math.floor(bookW / 2)
-      setPageSize({ width: pageW, height: bookH })
+      // Target aspect ratio (height / width).
+      // Smaller ratio => wider page. This is wider than 1:√2.
+      const ratio = 1.2
+
+      // Fit inside the stage with a bit of breathing room.
+      const maxPageH = Math.min(Math.floor(contentH * 0.9), 980)
+
+      // Available width for the whole book.
+      const maxBookW = nextUsePortrait ? 900 : 1400
+      const availBookW = Math.floor(Math.min(contentW * (nextUsePortrait ? 0.96 : 0.92), maxBookW))
+
+      // Convert width constraint into a page width constraint.
+      const maxPageWFromWidth = nextUsePortrait ? availBookW : Math.floor(availBookW / 2)
+      const maxPageWFromHeight = Math.floor(maxPageH / ratio)
+
+      // Choose the largest page width that fits both width and height.
+      const pageW = Math.max(260, Math.min(maxPageWFromWidth, maxPageWFromHeight))
+      const pageH = Math.max(420, Math.floor(pageW * ratio))
+
+      setPageSize({ width: pageW, height: pageH })
     }
 
     compute()

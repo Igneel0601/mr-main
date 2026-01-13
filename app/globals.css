@@ -4,6 +4,16 @@
   cursor: none !important;
 }
 
+@media (hover: none), (pointer: coarse) {
+  * {
+    cursor: auto !important;
+  }
+
+  #custom-cursor {
+    display: none !important;
+  }
+}
+
 ::selection {
   background: #8775F5;
   color: #ffffff;
@@ -20,17 +30,40 @@
   --color-text: #fafafa;
   --color-text-secondary: #9ca3af;
   --bg-y: 0px;
+
+  /* Typography baseline */
+  --font-family-base: 'Mabry Pro', sans-serif;
+  --font-size-base: 16px;
+  --font-weight-base: 300;
+  --letter-spacing-base: 0.1em;
+}
+
+html {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-base);
+  letter-spacing: var(--letter-spacing-base);
 }
 
 body {
   background-color: var(--color-primary);
   overflow-x: hidden;
   color: var(--color-text);
-  font-family: 'Mabry Pro', sans-serif;
-  font-size: 16px;
-  font-weight: 300;
-  letter-spacing: 0.1em;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-base);
+  letter-spacing: var(--letter-spacing-base);
   position: relative;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
 }
 
 #custom-cursor {
